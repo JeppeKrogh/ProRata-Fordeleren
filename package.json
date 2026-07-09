@@ -3,6 +3,7 @@
     "firebase": "^12.14.0"
   },
   "devDependencies": {
+    "@rollup/plugin-alias": "^6.0.0",
     "@rollup/plugin-node-resolve": "^16.0.3",
     "rollup": "^4.62.2"
   }
