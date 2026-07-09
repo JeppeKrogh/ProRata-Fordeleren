@@ -1045,7 +1045,7 @@ function downloadImage() {
     const file = new File([blob], "budget.png", { type: "image/png" });
     if (canShareResultImage() && navigator.canShare({ files: [file] })) {
       try {
-        await navigator.share({ files: [file], title: "ProRata-Fordeleren" });
+        await navigator.share({ files: [file] });
         return;
       } catch (err) {
         if (err && err.name === "AbortError") return;
