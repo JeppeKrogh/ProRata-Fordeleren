@@ -1,4 +1,4 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+import { initializeApp } from "firebase/app";
 import {
   GoogleAuthProvider,
   deleteUser,
@@ -7,14 +7,14 @@ import {
   reauthenticateWithPopup,
   signInWithPopup,
   signOut,
-} from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
+} from "firebase/auth";
 import {
   deleteDoc,
   doc,
   getDoc,
   getFirestore,
   setDoc,
-} from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+} from "firebase/firestore";
 
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyCNzPgcW2ytan1zznO_S2jWRnHGTr7QNFk",
