@@ -1,4 +1,4 @@
-const CACHE_NAME = "offline-cache-v66";
+const CACHE_NAME = "offline-cache-v67";
 const OFFLINE_URLS = [
     "/ProRata-Fordeleren/",
     "/ProRata-Fordeleren/favicon.png",
@@ -8,9 +8,8 @@ const OFFLINE_URLS = [
     "/ProRata-Fordeleren/icon-512x512.png",
     "/ProRata-Fordeleren/manifest.json",
     "/ProRata-Fordeleren/assets/css/material-tailwind.css",
-    "/ProRata-Fordeleren/assets/js/budget.js",
     "/ProRata-Fordeleren/assets/js/ripple.js",
-    "/ProRata-Fordeleren/assets/js/tw.js",
+    "/ProRata-Fordeleren/dist/bundle.js",
 ];
 
 self.addEventListener("install", (event) => {

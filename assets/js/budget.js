@@ -285,10 +285,9 @@ async function saveRemoteConfig(uid, cfg) {
 }
 
 async function persistConfig() {
+  saveLocalConfig(config);
   if (currentUser && db) {
     await saveRemoteConfig(currentUser.uid, config);
-  } else {
-    saveLocalConfig(config);
   }
 }
 
@@ -732,27 +731,31 @@ async function handleAuthChange(user) {
     if (user) clearLocalMode();
     currentUser = user;
     updateAuthUI();
+
+    // Show view immediately using local cache to avoid waiting for Firestore
+    const local = loadLocalConfig();
     if (user) {
+      applyLoadedConfig(local);
+      setView(determineView());
+      // Load remote config in background and update when ready
       const remote = await loadRemoteConfig(user.uid);
       if (remote) {
         applyLoadedConfig(remote);
-      } else {
-        const local = loadLocalConfig();
-        if (local) {
-          config = local;
-          await saveRemoteConfig(user.uid, config);
-        }
-        applyLoadedConfig(local);
+      } else if (local) {
+        config = local;
+        await saveRemoteConfig(user.uid, config);
       }
+      // Re-save locally so next cold load has data
+      saveLocalConfig(config);
     } else if (isLocalMode()) {
-      applyLoadedConfig(loadLocalConfig());
+      applyLoadedConfig(local);
+      setView(determineView());
     } else {
       applyLoadedConfig(null);
+      setView(determineView());
     }
   } catch (err) {
     console.error("Auth change handling failed", err);
-  } finally {
-    setView(determineView());
   }
 }
 
