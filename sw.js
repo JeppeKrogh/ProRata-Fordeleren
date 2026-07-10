@@ -1,4 +1,4 @@
-const CACHE_NAME = "offline-cache-v67";
+const CACHE_NAME = "offline-cache-v68";
 const OFFLINE_URLS = [
     "/ProRata-Fordeleren/",
     "/ProRata-Fordeleren/favicon.png",
@@ -35,26 +35,37 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
-    if (event.request.method !== "GET") return;
+    const request = event.request;
+    if (request.method !== "GET") return;
 
+    // Only handle our own assets. Firebase/Firestore/Google traffic (auth
+    // popups, the Firestore Listen/channel stream) must reach the network
+    // untouched — proxying it here breaks the WebChannel abort/retry cycle.
+    const url = new URL(request.url);
+    if (url.origin !== self.location.origin) return;
+
+    // Stale-while-revalidate: serve the cached shell instantly, refresh in
+    // the background so the next load has the latest.
     event.respondWith(
-        fetch(event.request)
-            .then((response) => {
-                if (response && response.ok && response.type === "basic") {
-                    const clone = response.clone();
-                    caches
-                        .open(CACHE_NAME)
-                        .then((cache) => cache.put(event.request, clone));
-                }
-                return response;
-            })
-            .catch(() =>
-                caches.match(event.request).then((cached) => {
+        caches.match(request).then((cached) => {
+            const network = fetch(request)
+                .then((response) => {
+                    if (response && response.ok && response.type === "basic") {
+                        const clone = response.clone();
+                        caches
+                            .open(CACHE_NAME)
+                            .then((cache) => cache.put(request, clone));
+                    }
+                    return response;
+                })
+                .catch(() => {
                     if (cached) return cached;
-                    if (event.request.mode === "navigate") {
+                    if (request.mode === "navigate") {
                         return caches.match("/ProRata-Fordeleren/index.html");
                     }
-                })
-            )
+                    return Response.error();
+                });
+            return cached || network;
+        })
     );
 });
